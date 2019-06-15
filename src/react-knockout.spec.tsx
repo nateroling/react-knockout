@@ -126,8 +126,8 @@ test("reactToKnockout components can have children", done => {
 });
 
 test("reactToKnockout components can have reactToKnockout children", done => {
-  const parent = (props: { children: any }) => <div>{props.children}</div>;
-  const child = () => <div>SUCCESS</div>;
+  const parent = (props: { children: any }) => <span>{props.children}</span>;
+  const child = () => <span>SUCCESS</span>;
   const parentConfig = reactToKnockout(parent);
   const childConfig = reactToKnockout(child);
   registerComponent("parent-component", parentConfig);
@@ -142,15 +142,15 @@ test("reactToKnockout components can have reactToKnockout children", done => {
       `
 <parent-component>
   <div data-bind="react: reactOptions">
-    <div>
+    <span>
       <div>
         <child-component>
           <div data-bind="react: reactOptions">
-            <div>SUCCESS</div>
+            <span>SUCCESS</span>
           </div>
         </child-component>
       </div>
-    </div>
+    </span>
   </div>
 </parent-component>`.replace(new RegExp("\\s+<", "g"), "<")
     );
