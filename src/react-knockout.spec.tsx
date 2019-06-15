@@ -6,6 +6,13 @@ const EmptyDivComponent = (props: unknown) => <div />;
 
 let root: Element = null;
 
+// Keep track of registered components for cleanup.
+const registeredComponents: string[] = [];
+const registerComponent = (name: string, config: any) => {
+  registeredComponents.push(name);
+  ko.components.register(name, config);
+};
+
 beforeEach(() => {
   document.body.innerHTML = "";
   root = document.createElement("main");
@@ -14,6 +21,7 @@ beforeEach(() => {
 
 afterEach(() => {
   ko.cleanNode(root);
+  registeredComponents.forEach(x => ko.components.unregister(x));
 });
 
 test("reactToKnockout returns a valid Knockout component config", () => {
@@ -26,8 +34,8 @@ test("reactToKnockout returns a valid Knockout component config", () => {
 });
 
 test("reactToKnockout creates a valid viewModel", () => {
-  const params: unknown = null;
-  const componentInfo: KnockoutComponentTypes.ComponentInfo = null;
+  const params: unknown = {};
+  const componentInfo = { element: root, templateNodes: [] as Element[] };
   const config = reactToKnockout(EmptyDivComponent);
 
   const viewModel = (config.viewModel as KnockoutComponentTypes.ViewModelFactoryFunction).createViewModel(
@@ -53,9 +61,55 @@ test("reactToKnockout components can be rendered via react binding", () => {
 test("reactToKnockout components can be registered and rendered", done => {
   const component = () => <div>SUCCESS</div>;
   const config = reactToKnockout(component);
-  ko.components.register("test-component", config);
+  registerComponent("test-component", config);
 
   root.innerHTML = `<test-component></test-component>`;
+  expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
+  expect(root.firstElementChild.childElementCount).toBe(0);
+
+  ko.applyBindings({}, root);
+
+  // TODO Find another way to wait for KO to apply component bindings.
+  setTimeout(() => {
+    expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
+    expect(root.firstElementChild.childElementCount).toBe(1);
+    expect(root.firstElementChild.firstElementChild.textContent).toBe(
+      "SUCCESS"
+    );
+    done();
+  }, 100);
+});
+
+test("reactToKnockout components can have params", done => {
+  const component = (props: { content: string }) => <div>{props.content}</div>;
+  const config = reactToKnockout(component);
+  registerComponent("test-component", config);
+
+  root.innerHTML = `<test-component params="content: 'SUCCESS'"></test-component>`;
+  expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
+  expect(root.firstElementChild.childElementCount).toBe(0);
+
+  ko.applyBindings({}, root);
+
+  // TODO Find another way to wait for KO to apply component bindings.
+  setTimeout(() => {
+    expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
+    expect(root.firstElementChild.childElementCount).toBe(1);
+    expect(root.firstElementChild.firstElementChild.textContent).toBe(
+      "SUCCESS"
+    );
+    done();
+  }, 100);
+});
+
+test("reactToKnockout components can have children", done => {
+  const component = (props: { children: string }) => (
+    <div>{props.children}</div>
+  );
+  const config = reactToKnockout(component);
+  registerComponent("test-component", config);
+
+  root.innerHTML = `<test-component>SUCCESS</test-component>`;
   expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
   expect(root.firstElementChild.childElementCount).toBe(0);
 

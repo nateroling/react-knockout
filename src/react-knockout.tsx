@@ -8,17 +8,15 @@ export const reactToKnockout = (
 ): KnockoutComponentTypes.ComponentConfig => ({
   viewModel: {
     createViewModel: function(params, componentInfo) {
-      //const props = params;
-      //const bindingContext = ko.contextFor(componentInfo.element);
+      const props = params;
+      const bindingContext = ko.contextFor(componentInfo.element);
 
-      /*
       props.children = (
         <KnockoutComponent
           bindingContext={bindingContext}
           templateNodes={componentInfo.templateNodes}
         />
       );
-      */
 
       const viewModel = {
         reactOptions: {
@@ -46,7 +44,6 @@ ko.bindingHandlers.react = {
 
   update: function(element, valueAccessor, allBindings) {
     var options = ko.unwrap(valueAccessor());
-    console.log("UPDATE");
 
     if (options && options.component) {
       var componentInstance = React.createElement(
@@ -61,4 +58,21 @@ ko.bindingHandlers.react = {
       ReactDOM.render(componentInstance, element);
     }
   }
+};
+
+const KnockoutComponent = (props: {
+  children?: React.ReactElement[];
+  templateNodes: Node[];
+  bindingContext: any;
+}) => {
+  const koRef = React.useRef(null);
+  React.useEffect(() => {
+    if (koRef.current) {
+      props.templateNodes.forEach(child => {
+        koRef.current.appendChild(child);
+      });
+      ko.applyBindings({}, koRef.current);
+    }
+  }, [koRef]);
+  return <div ref={koRef}>{props.children}</div>;
 };
