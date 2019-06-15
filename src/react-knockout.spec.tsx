@@ -125,37 +125,35 @@ test("reactToKnockout components can have children", done => {
   }, 100);
 });
 
-/*
 test("reactToKnockout components can have reactToKnockout children", done => {
   const parent = (props: { children: any }) => <div>{props.children}</div>;
   const child = () => <div>SUCCESS</div>;
   const parentConfig = reactToKnockout(parent);
   const childConfig = reactToKnockout(child);
   registerComponent("parent-component", parentConfig);
-  registerComponent("child-component", parentConfig);
+  registerComponent("child-component", childConfig);
 
   root.innerHTML = `<parent-component><child-component></child-component></parent-component>`;
-  const parentElement = root.firstElementChild;
-  const childElement = parentElement.firstElementChild;
-  expect(parentElement.tagName).toBe("PARENT-COMPONENT");
-  expect(parentElement.childElementCount).toBe(1);
-  expect(childElement.tagName).toBe("CHILD-COMPONENT");
-  expect(childElement.childElementCount).toBe(0);
-
   ko.applyBindings({}, root);
 
   // TODO Find another way to wait for KO to apply component bindings.
   setTimeout(() => {
-    const parentElement = root.firstElementChild;
-    const childElement = parentElement.firstElementChild;
-    console.log(root.innerHTML);
-    done();
-    expect(parentElement.tagName).toBe("PARENT-COMPONENT");
-    expect(parentElement.childElementCount).toBe(1);
-    expect(childElement.tagName).toBe("CHILD-COMPONENT");
-    expect(childElement.childElementCount).toBe(0);
-    expect(childElement.textContent).toBe("SUCCESS");
+    expect(root.innerHTML).toBe(
+      `
+<parent-component>
+  <div data-bind="react: reactOptions">
+    <div>
+      <div>
+        <child-component>
+          <div data-bind="react: reactOptions">
+            <div>SUCCESS</div>
+          </div>
+        </child-component>
+      </div>
+    </div>
+  </div>
+</parent-component>`.replace(new RegExp("\\s+<", "g"), "<")
+    );
     done();
   }, 100);
 });
-*/
