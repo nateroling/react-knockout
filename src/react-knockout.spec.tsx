@@ -3,6 +3,8 @@ import * as React from "react";
 import * as ko from "knockout";
 
 const EmptyDivComponent = (props: unknown) => <div />;
+const containerTemplate =
+  "<span data-bind='template: { nodes: $componentTemplateNodes }'></span>";
 
 let root: Element = null;
 
@@ -130,8 +132,7 @@ test("reactToKnockout components can have reactToKnockout children", done => {
   }, 100);
 });
 
-/*
-test("reactToKnockout components can access KO $parent context", done => {
+test("reactToKnockout components can access KO context", done => {
   const child = (props: { content: string }) => <span>{props.content}</span>;
   const parentConfig = {
     viewModel: {
@@ -141,36 +142,44 @@ test("reactToKnockout components can access KO $parent context", done => {
         };
       }
     },
-    template:
-      "<span data-bind='template: { nodes: $componentTemplateNodes }'></span>"
+    template: containerTemplate
   };
   const childConfig = reactToKnockout(child);
   registerComponent("parent-component", parentConfig);
   registerComponent("child-component", childConfig);
 
-  root.innerHTML = `<parent-component><child-component params="content: $parent.content"></child-component></parent-component>`;
+  root.innerHTML = `<parent-component><child-component params="content: content"></child-component></parent-component>`;
   ko.applyBindings({}, root);
 
   // TODO Find another way to wait for KO to apply component bindings.
   setTimeout(() => {
-    expect(root.innerHTML).toBe(
-      `
-<parent-component>
-  <div data-bind="react: reactOptions">
-    <span>
-      <div>
-        <child-component>
-          <div data-bind="react: reactOptions">
-            <span>SUCCESS</span>
-          </div>
-        </child-component>
-      </div>
-    </span>
-  </div>
-</parent-component>`.replace(new RegExp("\\s+<", "g"), "<")
-    );
+    expect(root.innerHTML).toContain("SUCCESS");
     done();
   }, 100);
 });
 
-*/
+test("reactToKnockout components can access KO $parent context", done => {
+  const child = (props: { content: string }) => <span>{props.content}</span>;
+  const parentConfig = {
+    viewModel: { createViewModel: () => {} },
+    template: containerTemplate
+  };
+  const grandparentConfig = {
+    viewModel: {
+      createViewModel: () => ({ content: "SUCCESS" })
+    },
+    template: containerTemplate
+  };
+
+  registerComponent("c-a", grandparentConfig);
+  registerComponent("c-b", parentConfig);
+  registerComponent("c-c", reactToKnockout(child));
+  root.innerHTML = `<c-a><c-b><c-c params="content: $parent.content"></c-c></c-b></c-a>`;
+  ko.applyBindings({}, root);
+
+  // TODO Find another way to wait for KO to apply component bindings.
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("SUCCESS");
+    done();
+  }, 100);
+});
