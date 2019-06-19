@@ -54,15 +54,41 @@ test("knockoutToReact binds a named component with params", done => {
   }, 100);
 });
 
-test("knockoutToReact updates params", done => {
+test("knockoutToReact ignores non-observable params", done => {
   const config = {
     viewModel: {
       createViewModel: (params: any) => ({ content: params.content })
     },
-    template: `<span data-bind="text: content()"></span>`
+    template: `<span data-bind="text: content"></span>`
   };
   registerComponent("test-component", config);
   const Component = knockoutToReact("test-component");
+
+  // Re-render with initial props.
+  ReactDOM.render(<Component content="INITIAL" />, root);
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("INITIAL");
+
+    // Re-render with updated props.
+    ReactDOM.render(<Component content="SUCCESS" />, root);
+    setTimeout(() => {
+      expect(root.innerHTML).toContain("INITIAL");
+      done();
+    }, 100);
+  }, 100);
+});
+
+test("knockoutToReact creates observable params", done => {
+  const config = {
+    viewModel: {
+      createViewModel: (params: any) => ({ content: params.content })
+    },
+    template: `<span data-bind="text: content"></span>`
+  };
+  registerComponent("test-component", config);
+  const Component = knockoutToReact("test-component", {
+    makeObservable: ["content"]
+  });
 
   // Re-render with initial props.
   ReactDOM.render(<Component content="INITIAL" />, root);

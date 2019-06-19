@@ -4,7 +4,10 @@ import { ReactComponentLike } from "prop-types";
 
 type KOConfig = KnockoutComponentTypes.ComponentConfig;
 
-export const knockoutToReact = (componentName: string): ReactComponentLike => {
+export const knockoutToReact = (
+  componentName: string,
+  options: { makeObservable: string[] } = { makeObservable: [] }
+): ReactComponentLike => {
   return props => {
     const ref = React.useRef(null);
 
@@ -12,7 +15,11 @@ export const knockoutToReact = (componentName: string): ReactComponentLike => {
       (() => {
         const p: any = {};
         for (const key in props) {
-          p[key] = ko.observable(props[key]);
+          if (options.makeObservable.indexOf(key) != -1) {
+            p[key] = ko.observable(props[key]);
+          } else {
+            p[key] = props[key];
+          }
         }
         return p;
       })()
@@ -21,7 +28,9 @@ export const knockoutToReact = (componentName: string): ReactComponentLike => {
     // Every render.
     React.useEffect(() => {
       for (const key in props) {
-        params[key](props[key]);
+        if (options.makeObservable.indexOf(key) != -1) {
+          params[key](props[key]);
+        }
       }
     });
 
