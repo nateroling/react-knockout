@@ -1,4 +1,3 @@
-import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ReactComponentLike } from "prop-types";

@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ko from "knockout";
 import { ReactComponentLike } from "prop-types";
 
 export const knockoutToReact = (

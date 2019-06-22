@@ -1,6 +1,5 @@
 import { reactToKnockout } from "./reactToKnockout";
 import * as React from "react";
-import * as ko from "knockout";
 
 const EmptyDivComponent = (props: unknown) => <div />;
 const containerTemplate =

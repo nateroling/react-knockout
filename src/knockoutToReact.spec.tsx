@@ -1,7 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as ko from "knockout";
-import renderer from "react-test-renderer";
 import { knockoutToReact } from "./knockoutToReact";
 
 let root: Element = null;
