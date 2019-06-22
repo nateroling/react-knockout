@@ -2,8 +2,6 @@ import * as React from "react";
 import * as ko from "knockout";
 import { ReactComponentLike } from "prop-types";
 
-type KOConfig = KnockoutComponentTypes.ComponentConfig;
-
 export const knockoutToReact = (
   componentName: string,
   options: { makeObservable: string[] } = { makeObservable: [] }
@@ -25,7 +23,7 @@ export const knockoutToReact = (
       })()
     );
 
-    // Every render.
+    // Every time props are updated, update our observables.
     React.useEffect(() => {
       for (const key in props) {
         if (options.makeObservable.indexOf(key) != -1) {
@@ -34,12 +32,13 @@ export const knockoutToReact = (
       }
     });
 
-    // Just once.
+    // Call ko.applyBindings just once, when we're first rendered.
     React.useEffect(() => {
       ko.applyBindings(
         { params: params, component: componentName },
         ref.current
       );
+      // Return a cleanup function.
       return () => ko.cleanNode(ref.current);
     }, []);
 

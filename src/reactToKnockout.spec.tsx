@@ -1,4 +1,4 @@
-import { reactToKnockout } from "./react-knockout";
+import { reactToKnockout } from "./reactToKnockout";
 import * as React from "react";
 import * as ko from "knockout";
 
