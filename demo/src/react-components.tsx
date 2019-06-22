@@ -1,23 +1,24 @@
 import * as React from "react";
+import { knockoutToReact } from "../../src/react-knockout";
 
-export const App = () => {
-  const [clickCount, setClickCount] = React.useState(0);
-  const increment = () => setClickCount(clickCount + 1);
-
+export const Clicker = (params: any) => {
   return (
-    <div>
-      <div>React Component</div>
-      <Wrapper>
-        <Clicker value={clickCount} onClick={increment} />
-      </Wrapper>
+    <div className="react clicker">
+      <h1>I am a clicker. Click my button:</h1>
+      <button onClick={params.onClick}>
+        Clickers have been clicked {params.value} times.
+      </button>
     </div>
   );
 };
 
-const Clicker = (params: any) => {
-  return <button onClick={params.onClick}>{params.value}</button>;
+export const Wrapper = (params: any) => {
+  return (
+    <div className="react wrapper">
+      <h1>I am a wrapper. I wrap children:</h1>
+      <div className="wrapper--children">{params.children}</div>
+    </div>
+  );
 };
 
-const Wrapper = (params: any) => {
-  return <div>{params.children}</div>;
-};
+export const KoWrapper = knockoutToReact("wrapper");

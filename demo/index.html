@@ -1,10 +1,34 @@
 <html>
     <head>
         <title>react-knockout demo</title>
+        <style>
+            body {
+                font-family: sans-serif;
+            }
+            .wrapper, .clicker {
+                border: 1px solid black;
+                border-radius: 0.25em;
+                padding: 0.5em;
+            }
+
+            .wrapper h1, .clicker h1 {
+                font-size: 120%;
+            }
+
+            .react.clicker, .react.wrapper {
+                border-color:red;
+                background-color: rgba(255, 0, 0, 0.2);
+            }
+            .knockout.clicker, .knockout.wrapper {
+                border-color: blue;
+                background-color: rgba(0, 0, 255, 0.2);
+            }
+        </style>
     </head>
     <body>
         <div id="react-root"></div>
         <div id="ko-root"><app></app></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-debug.js"></script>
         <script src="dist/demo.js"></script>
     </body>
 </html>

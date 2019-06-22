@@ -1,8 +1,7 @@
-import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./ko-components";
-import { App } from "./react-components";
+import { App } from "./react-app";
 
 // Initialize the React root component.
 ReactDOM.render(<App />, document.getElementById("react-root"));

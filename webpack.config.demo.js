@@ -6,6 +6,7 @@ module.exports = {
     filename: "demo.js",
     path: __dirname + '/demo/dist'
   },
+  mode: "development",
   devtool: "source-map",
   resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"]

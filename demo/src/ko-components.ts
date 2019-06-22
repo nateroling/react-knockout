@@ -1,5 +1,3 @@
-import * as ko from "knockout";
-
 ko.components.register("app", {
   viewModel: {
     createViewModel: () => {
@@ -9,7 +7,7 @@ ko.components.register("app", {
     }
   },
   template: `
-<div>Knockout Component</div>
+<h1>Knockout Root</h1>
   <wrapper>
     <clicker params="value: $parent.clickCount"></clicker>
   </wrapper>
@@ -27,13 +25,24 @@ ko.components.register("clicker", {
       };
     }
   },
-  template: "<button data-bind='text: value, click: increment'></button>"
+  template: `
+<div class="knockout clicker">
+  <h1>I am a clicker. Click my button:</h1>
+  <button data-bind='click: increment'>
+    Clickers have been clicked <span data-bind='text: value'></span> times.
+  </button>
+</div>
+`
 });
 
 ko.components.register("wrapper", {
   viewModel: {
     createViewModel: () => ({})
   },
-  template:
-    "<div data-bind='template: { nodes: $componentTemplateNodes }'></div>"
+  template: `
+<div class='knockout wrapper'>
+  <h1>I am a wrapper. I wrap children:</h1>
+  <div class="wrapper--children" data-bind='template: { nodes: $componentTemplateNodes }'></div>
+</div>
+`
 });
