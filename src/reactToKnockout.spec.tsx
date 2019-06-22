@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { reactToKnockout } from "./reactToKnockout";
 import * as React from "react";
 
@@ -39,10 +40,7 @@ test("reactToKnockout creates a valid viewModel", () => {
   const componentInfo = { element: root, templateNodes: [] as Element[] };
   const config = reactToKnockout(EmptyDivComponent);
 
-  const viewModel = (config.viewModel as KnockoutComponentTypes.ViewModelFactoryFunction).createViewModel(
-    params,
-    componentInfo
-  );
+  const viewModel = config.viewModel.createViewModel(params, componentInfo);
 
   expect(viewModel).toBeInstanceOf(Object);
 });

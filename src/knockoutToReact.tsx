@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import * as React from "react";
 import { ReactComponentLike } from "prop-types";
 
@@ -42,10 +43,9 @@ export const knockoutToReact = (
     }, []);
 
     return (
-      <div
-        data-bind="component: {name: component, params: params }"
-        ref={ref}
-      />
+      <div data-bind="component: {name: component, params: params }" ref={ref}>
+        {props.children}
+      </div>
     );
   };
 };

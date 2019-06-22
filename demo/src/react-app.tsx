@@ -8,7 +8,9 @@ export const App = () => {
   return (
     <div>
       <h1>React Root</h1>
+      <Clicker value={clickCount} onClick={increment} />
       <Wrapper>
+        <Clicker value={clickCount} onClick={increment} />
         <KoWrapper>
           <Clicker value={clickCount} onClick={increment} />
         </KoWrapper>

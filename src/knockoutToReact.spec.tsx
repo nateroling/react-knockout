@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { knockoutToReact } from "./knockoutToReact";
@@ -46,6 +47,20 @@ test("knockoutToReact binds a named component with params", done => {
   registerComponent("test-component", config);
   const Component = knockoutToReact("test-component");
   ReactDOM.render(<Component content="SUCCESS" />, root);
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("SUCCESS");
+    done();
+  }, 100);
+});
+
+test("knockoutToReact binds a named component with componentTemplateNodes", done => {
+  const config = {
+    viewModel: { createViewModel: () => ({ content: "SUCCESS" }) },
+    template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
+  };
+  registerComponent("test-component", config);
+  const Component = knockoutToReact("test-component");
+  ReactDOM.render(<Component>SUCCESS</Component>, root);
   setTimeout(() => {
     expect(root.innerHTML).toContain("SUCCESS");
     done();

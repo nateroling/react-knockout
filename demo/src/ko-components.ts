@@ -1,3 +1,5 @@
+import * as ko from "knockout";
+
 ko.components.register("app", {
   viewModel: {
     createViewModel: () => {

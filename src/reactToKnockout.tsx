@@ -1,12 +1,13 @@
+import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ReactComponentLike } from "prop-types";
 
 export const reactToKnockout = (
   reactComponent: ReactComponentLike
-): KnockoutComponentTypes.ComponentConfig => ({
+): ko.components.Config => ({
   viewModel: {
-    createViewModel: function(params, componentInfo) {
+    createViewModel: function(params: any, componentInfo: any) {
       const props = params;
       const bindingContext = ko.contextFor(componentInfo.element);
 

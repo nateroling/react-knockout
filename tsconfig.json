@@ -11,6 +11,5 @@
     "lib": ["es5", "es6", "dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"],
-  "types": [ "knockout" ]
+  "exclude": ["node_modules/**/*", "**/*.spec.ts"]
 }
