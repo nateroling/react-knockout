@@ -1,12 +1,11 @@
+import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import "./ko-components";
+import { App } from "./react-components";
 
-const init = () => {
-  ReactDOM.render(<App />, document.getElementById("root"));
-};
+// Initialize the React root component.
+ReactDOM.render(<App />, document.getElementById("react-root"));
 
-const App = () => {
-  return <div>Awesome</div>;
-};
-
-init();
+// Initialize the Knockout root component.
+ko.applyBindings({}, document.getElementById("ko-root"));
