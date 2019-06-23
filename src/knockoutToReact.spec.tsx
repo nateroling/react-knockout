@@ -55,7 +55,7 @@ test("knockoutToReact binds a named component with params", done => {
 
 test("knockoutToReact binds a named component with componentTemplateNodes", done => {
   const config = {
-    viewModel: { createViewModel: () => ({ content: "SUCCESS" }) },
+    viewModel: { createViewModel: () => ({}) },
     template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
   };
   registerComponent("test-component", config);
