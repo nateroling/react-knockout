@@ -67,6 +67,39 @@ test("knockoutToReact binds a named component with componentTemplateNodes", done
   }, 100);
 });
 
+test("knockoutToReact updates a named component with componentTemplateNodes", done => {
+  const config = {
+    viewModel: { createViewModel: () => ({ content: "SUCCESS" }) },
+    template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
+  };
+  registerComponent("test-component", config);
+  const ParentComponent = knockoutToReact("test-component");
+  const ChildComponent = (props: { value: string }) => <div>{props.value}</div>;
+  let message = "INITIAL";
+
+  ReactDOM.render(
+    <ParentComponent>
+      <ChildComponent value={message}></ChildComponent>
+    </ParentComponent>,
+    root
+  );
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("INITIAL");
+
+    message = "SUCCESS";
+    ReactDOM.render(
+      <ParentComponent>
+        <ChildComponent value={message}></ChildComponent>
+      </ParentComponent>,
+      root
+    );
+    setTimeout(() => {
+      expect(root.innerHTML).toContain("SUCCESS");
+      done();
+    }, 100);
+  }, 100);
+});
+
 test("knockoutToReact ignores non-observable params", done => {
   const config = {
     viewModel: {
