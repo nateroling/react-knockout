@@ -40,9 +40,7 @@ export const knockoutToReact = (
           params: params,
           component: componentName,
           reactChildOptions: {
-            component: (childProps: any) => (
-              <div>INITIAL+SUCCESS{childProps.children}</div>
-            ),
+            component: (childProps: any) => <div>{childProps.children}</div>,
             props: { children: props.children }
           }
         },
