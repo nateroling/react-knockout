@@ -1,7 +1,7 @@
 import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { knockoutToReact } from "./knockoutToReact";
+import { knockoutToReact } from "./react-knockout";
 
 let root: Element = null;
 

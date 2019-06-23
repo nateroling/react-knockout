@@ -24,10 +24,6 @@ export const knockoutToReact = (
       })()
     );
 
-    const [propsChildren, setPropsChildren] = React.useState(() => {
-      return ko.observable(props.children);
-    });
-
     // Every time props are updated, update our observables.
     React.useEffect(() => {
       for (const key in props) {
@@ -64,7 +60,53 @@ export const knockoutToReact = (
   };
 };
 
-// TODO Don't dupilcate this duh
+const KnockoutComponent = (props: {
+  children?: React.ReactElement[];
+  templateNodes: Node[];
+  bindingContext: any;
+}) => {
+  const koRef = React.useRef(null);
+  React.useEffect(() => {
+    if (koRef.current) {
+      props.templateNodes.forEach(child => {
+        koRef.current.appendChild(child);
+      });
+      ko.applyBindings({}, koRef.current);
+    }
+  }, [koRef]);
+  return <div ref={koRef}>{props.children}</div>;
+};
+
+export const reactToKnockout = (
+  reactComponent: ReactComponentLike
+): ko.components.Config => ({
+  viewModel: {
+    createViewModel: function(params: any, componentInfo: any) {
+      const props = params;
+      const bindingContext = ko.contextFor(componentInfo.element);
+
+      // Wrap knockout child nodes in KnockoutComponent and pass as
+      // props.children.
+      props.children = (
+        <KnockoutComponent
+          bindingContext={bindingContext}
+          templateNodes={componentInfo.templateNodes}
+        />
+      );
+
+      const viewModel = {
+        reactOptions: {
+          component: reactComponent,
+          props: params
+        }
+      };
+      return viewModel;
+    }
+  },
+  template: "<div data-bind='react: reactOptions'></div>"
+});
+
+// Copied from https://github.com/calvinwoo/knockout-bind-react
 ko.bindingHandlers.react = {
   init: function(element) {
     ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
@@ -92,21 +134,4 @@ ko.bindingHandlers.react = {
       ReactDOM.render(componentInstance, element);
     }
   }
-};
-
-const KnockoutComponent = (props: {
-  children?: React.ReactElement[];
-  templateNodes: Node[];
-  bindingContext: any;
-}) => {
-  const koRef = React.useRef(null);
-  React.useEffect(() => {
-    if (koRef.current) {
-      props.templateNodes.forEach(child => {
-        koRef.current.appendChild(child);
-      });
-      ko.applyBindings({}, koRef.current);
-    }
-  }, [koRef]);
-  return <div ref={koRef}>{props.children}</div>;
 };

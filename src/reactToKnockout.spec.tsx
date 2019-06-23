@@ -1,5 +1,5 @@
 import * as ko from "knockout";
-import { reactToKnockout } from "./reactToKnockout";
+import { reactToKnockout } from "./react-knockout";
 import * as React from "react";
 
 const EmptyDivComponent = (props: unknown) => <div />;
