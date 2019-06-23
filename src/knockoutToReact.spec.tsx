@@ -67,20 +67,20 @@ test("knockoutToReact binds a named component with componentTemplateNodes", done
   }, 100);
 });
 
-test("knockoutToReact updates a named component with componentTemplateNodes", done => {
+test("knockoutToReact updates a named component child content with componentTemplateNodes", done => {
   const config = {
     viewModel: { createViewModel: () => ({ content: "SUCCESS" }) },
     template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
   };
   registerComponent("test-component", config);
-  const ParentComponent = knockoutToReact("test-component");
-  const ChildComponent = (props: { value: string }) => <div>{props.value}</div>;
+  const KOParent = knockoutToReact("test-component");
+  const ReactChild = (props: { children: any }) => <div>{props.children}</div>;
   let message = "INITIAL";
 
   ReactDOM.render(
-    <ParentComponent>
-      <ChildComponent value={message}></ChildComponent>
-    </ParentComponent>,
+    <KOParent>
+      <ReactChild>{message}</ReactChild>
+    </KOParent>,
     root
   );
   setTimeout(() => {
@@ -88,9 +88,42 @@ test("knockoutToReact updates a named component with componentTemplateNodes", do
 
     message = "SUCCESS";
     ReactDOM.render(
-      <ParentComponent>
-        <ChildComponent value={message}></ChildComponent>
-      </ParentComponent>,
+      <KOParent>
+        <ReactChild>{message}</ReactChild>
+      </KOParent>,
+      root
+    );
+    setTimeout(() => {
+      expect(root.innerHTML).toContain("SUCCESS");
+      done();
+    }, 100);
+  }, 100);
+});
+
+test("knockoutToReact updates a named component child props with componentTemplateNodes", done => {
+  const config = {
+    viewModel: { createViewModel: () => ({ content: "SUCCESS" }) },
+    template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
+  };
+  registerComponent("test-component", config);
+  const KOParent = knockoutToReact("test-component");
+  const ReactChild = (props: { value: string }) => <div>{props.value}</div>;
+  let message = "INITIAL";
+
+  ReactDOM.render(
+    <KOParent>
+      <ReactChild value={message}></ReactChild>
+    </KOParent>,
+    root
+  );
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("INITIAL");
+
+    message = "SUCCESS";
+    ReactDOM.render(
+      <KOParent>
+        <ReactChild value={message}></ReactChild>
+      </KOParent>,
       root
     );
     setTimeout(() => {
