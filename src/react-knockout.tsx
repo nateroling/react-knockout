@@ -119,11 +119,15 @@ ko.bindingHandlers.react = {
   update: function(element, valueAccessor, allBindings) {
     var options = ko.unwrap(valueAccessor());
 
+    const props: any = {};
+    if (options.props) {
+      for (const key of Object.keys(options.props)) {
+        props[key] = ko.unwrap(options.props[key]);
+      }
+    }
+
     if (options && options.component) {
-      var componentInstance = React.createElement(
-        options.component,
-        options.props
-      );
+      var componentInstance = React.createElement(options.component, props);
 
       if (options.ref) {
         options.ref(componentInstance);

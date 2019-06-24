@@ -91,6 +91,24 @@ test("reactToKnockout components can have params", done => {
   }, 100);
 });
 
+test("reactToKnockout components can have observable params", done => {
+  const component = (props: { content: string }) => <div>{props.content}</div>;
+  const config = reactToKnockout(component);
+  registerComponent("test-component", config);
+
+  root.innerHTML = `<test-component params="content: content"></test-component>`;
+  expect(root.firstElementChild.tagName).toBe("TEST-COMPONENT");
+  expect(root.firstElementChild.childElementCount).toBe(0);
+
+  ko.applyBindings({ content: ko.observable("SUCCESS") }, root);
+
+  // TODO Find another way to wait for KO to apply component bindings.
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("SUCCESS");
+    done();
+  }, 100);
+});
+
 test("reactToKnockout components can have children", done => {
   const component = (props: { children: string }) => (
     <div>{props.children}</div>
