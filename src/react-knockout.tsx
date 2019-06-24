@@ -69,7 +69,7 @@ const KnockoutComponent = (props: {
       props.templateNodes.forEach(child => {
         koRef.current.appendChild(child);
       });
-      ko.applyBindings({}, koRef.current);
+      ko.applyBindings(props.bindingContext, koRef.current);
     }
   }, [koRef]);
   return <div ref={koRef}>{props.children}</div>;
@@ -81,7 +81,9 @@ export const reactToKnockout = (
   viewModel: {
     createViewModel: function(params: any, componentInfo: any) {
       const props = params;
-      const bindingContext = ko.contextFor(componentInfo.element);
+      const bindingContext = ko
+        .contextFor(componentInfo.element)
+        .createChildContext({});
 
       // Wrap knockout child nodes in KnockoutComponent and pass as
       // props.children.

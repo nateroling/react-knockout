@@ -39,6 +39,7 @@ test("reactToKnockout creates a valid viewModel", () => {
   const params: unknown = {};
   const componentInfo = { element: root, templateNodes: [] as Element[] };
   const config = reactToKnockout(EmptyDivComponent);
+  ko.applyBindings({}, root);
 
   const viewModel = config.viewModel.createViewModel(params, componentInfo);
 
@@ -190,6 +191,34 @@ test("reactToKnockout components can access KO $parent context", done => {
   registerComponent("c-b", parentConfig);
   registerComponent("c-c", reactToKnockout(child));
   root.innerHTML = `<c-a><c-b><c-c params="content: $parent.content"></c-c></c-b></c-a>`;
+  ko.applyBindings({}, root);
+
+  // TODO Find another way to wait for KO to apply component bindings.
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("SUCCESS");
+    done();
+  }, 100);
+});
+
+test("ko components can access $parent through a react parent", done => {
+  const childConfig = {
+    viewModel: {
+      createViewModel: (params: any) => ({ content: params.content })
+    },
+    template: `<span data-bind="text: content"></span>`
+  };
+  const parent = (props: { children: any }) => <span>{props.children}</span>;
+  const grandparentConfig = {
+    viewModel: {
+      createViewModel: () => ({ content: "SUCCESS" })
+    },
+    template: containerTemplate
+  };
+
+  registerComponent("c-a", grandparentConfig);
+  registerComponent("c-b", reactToKnockout(parent));
+  registerComponent("c-c", childConfig);
+  root.innerHTML = `<c-a><c-b><c-c params="content: 'SUCCESS'"></c-c></c-b></c-a>`;
   ko.applyBindings({}, root);
 
   // TODO Find another way to wait for KO to apply component bindings.
