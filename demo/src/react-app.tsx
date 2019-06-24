@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Wrapper, Clicker, KoWrapper } from "./react-components";
+import { Wrapper, Clicker, KoWrapper, KoClicker } from "./react-components";
 
 export const App = () => {
   const [clickCount, setClickCount] = React.useState(0);
@@ -9,12 +9,15 @@ export const App = () => {
     <div>
       <h1>React Root</h1>
       <Clicker value={clickCount} onClick={increment} />
+      <KoClicker value={clickCount} setValue={setClickCount} />
       <Wrapper>
+        <KoClicker value={clickCount} setValue={setClickCount} />
         <Clicker value={clickCount} onClick={increment} />
-        <KoWrapper>
-          <Clicker value={clickCount} onClick={increment} />
-        </KoWrapper>
       </Wrapper>
+      <KoWrapper>
+        <Clicker value={clickCount} onClick={increment} />
+        <KoClicker value={clickCount} setValue={setClickCount} />
+      </KoWrapper>
     </div>
   );
 };

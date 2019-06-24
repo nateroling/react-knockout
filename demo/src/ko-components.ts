@@ -1,22 +1,33 @@
 import * as ko from "knockout";
+import { reactToKnockout } from "../../src/react-knockout";
+import { Wrapper, Clicker } from "./react-components";
 
 ko.components.register("app", {
   viewModel: {
     createViewModel: () => {
+      const clickCount = ko.observable(0);
       return {
-        clickCount: ko.observable(0)
+        clickCount: clickCount,
+        increment: () => clickCount(clickCount() + 1)
       };
     }
   },
   template: `
 <h1>Knockout Root</h1>
-  <wrapper>
-    <clicker params="value: $parent.clickCount"></clicker>
-  </wrapper>
+  <ko-clicker params="value: clickCount"></ko-clicker>
+  <react-clicker params="value: clickCount, onClick: increment"></react-clicker>
+  <ko-wrapper>
+    <react-clicker params="value: $parent.clickCount, onClick: $parent.increment"></react-clicker>
+    <ko-clicker params="value: $parent.clickCount"></ko-clicker>
+  </ko-wrapper>
+  <react-wrapper>
+    <ko-clicker params="value: $parent.clickCount"></ko-clicker>
+    <react-clicker params="value: $parent.clickCount, onClick: $parent.increment"></react-clicker>
+  </react-wrapper>
 `
 });
 
-ko.components.register("clicker", {
+ko.components.register("ko-clicker", {
   viewModel: {
     createViewModel: (params: { value: any }) => {
       return {
@@ -37,7 +48,7 @@ ko.components.register("clicker", {
 `
 });
 
-ko.components.register("wrapper", {
+ko.components.register("ko-wrapper", {
   viewModel: {
     createViewModel: () => ({})
   },
@@ -48,3 +59,6 @@ ko.components.register("wrapper", {
 </div>
 `
 });
+
+ko.components.register("react-wrapper", reactToKnockout(Wrapper));
+ko.components.register("react-clicker", reactToKnockout(Clicker));

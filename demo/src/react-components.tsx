@@ -21,4 +21,8 @@ export const Wrapper = (params: any) => {
   );
 };
 
-export const KoWrapper = knockoutToReact("wrapper");
+export const KoWrapper = knockoutToReact("ko-wrapper");
+export const KoClicker = knockoutToReact("ko-clicker", {
+  makeObservable: ["value"],
+  setObservable: { value: "setValue" }
+});

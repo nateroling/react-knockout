@@ -5,7 +5,10 @@ import { ReactComponentLike } from "prop-types";
 
 export const knockoutToReact = (
   componentName: string,
-  options: { makeObservable: string[] } = { makeObservable: [] }
+  options: {
+    makeObservable: string[];
+    setObservable?: { [value: string]: string };
+  } = { makeObservable: [], setObservable: {} }
 ): ReactComponentLike => {
   return props => {
     const ref = React.useRef(null);
@@ -16,6 +19,10 @@ export const knockoutToReact = (
         for (const key in props) {
           if (options.makeObservable.indexOf(key) != -1) {
             p[key] = ko.observable(props[key]);
+            if (options.setObservable && options.setObservable[key]) {
+              const setterKey = options.setObservable[key];
+              p[key].subscribe((value: any) => p[setterKey](value));
+            }
           } else {
             p[key] = props[key];
           }
@@ -24,8 +31,11 @@ export const knockoutToReact = (
       })()
     );
 
+    const [childrenObs] = React.useState(() => ko.observable(props.children));
+
     // Every time props are updated, update our observables.
     React.useEffect(() => {
+      childrenObs(props.children);
       for (const key in props) {
         if (options.makeObservable.indexOf(key) != -1) {
           params[key](props[key]);
@@ -33,19 +43,24 @@ export const knockoutToReact = (
       }
     });
 
-    // Call ko.applyBindings just once, when we're first rendered.
-    React.useEffect(() => {
-      ko.applyBindings(
-        {
+    const [koModel, setKoModel] = React.useState(() => {
+      const initial = ko.pureComputed(() => {
+        const model = {
           params: params,
           component: componentName,
           reactChildOptions: {
             component: (childProps: any) => <div>{childProps.children}</div>,
-            props: { children: props.children }
+            props: { children: childrenObs }
           }
-        },
-        ref.current
-      );
+        };
+        return model;
+      });
+      return initial;
+    });
+
+    // Call ko.applyBindings just once, when we're first rendered.
+    React.useEffect(() => {
+      ko.applyBindings(koModel, ref.current);
       // Return a cleanup function.
       return () => ko.cleanNode(ref.current);
     }, []);
@@ -59,7 +74,6 @@ export const knockoutToReact = (
 };
 
 const KnockoutComponent = (props: {
-  children?: React.ReactElement[];
   templateNodes: Node[];
   bindingContext: any;
 }) => {
@@ -72,7 +86,7 @@ const KnockoutComponent = (props: {
       ko.applyBindings(props.bindingContext, koRef.current);
     }
   }, [koRef]);
-  return <div ref={koRef}>{props.children}</div>;
+  return <div ref={koRef}></div>;
 };
 
 export const reactToKnockout = (

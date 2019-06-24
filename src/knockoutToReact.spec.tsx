@@ -2,6 +2,7 @@ import * as ko from "knockout";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { knockoutToReact } from "./react-knockout";
+import { act } from "react-dom/test-utils";
 
 let root: Element = null;
 
@@ -64,6 +65,25 @@ test("knockoutToReact binds a named component with componentTemplateNodes", done
   setTimeout(() => {
     expect(root.innerHTML).toContain("SUCCESS");
     done();
+  }, 100);
+});
+
+test("knockoutToReact updates a named component with componentTemplateNodes", done => {
+  const config = {
+    viewModel: { createViewModel: () => ({}) },
+    template: `<span data-bind="template: { nodes: $componentTemplateNodes }"></span>`
+  };
+  registerComponent("test-component", config);
+  const Component = knockoutToReact("test-component");
+  ReactDOM.render(<Component>INITIAL</Component>, root);
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("INITIAL");
+
+    ReactDOM.render(<Component>SUCCESS</Component>, root);
+    setTimeout(() => {
+      expect(root.innerHTML).toContain("SUCCESS");
+      done();
+    }, 100);
   }, 100);
 });
 
@@ -180,5 +200,51 @@ test("knockoutToReact creates observable params", done => {
       expect(root.innerHTML).toContain("SUCCESS");
       done();
     }, 100);
+  }, 100);
+});
+
+test("knockoutToReact make observables to callbacks", done => {
+  const config = {
+    viewModel: {
+      createViewModel: (params: any) => ({
+        content: params.content,
+        updateContent: () => params.content("SUCCESS")
+      })
+    },
+    template: `<span id="target" data-bind="click: updateContent"></span>`
+  };
+  registerComponent("test-component", config);
+  const Component = knockoutToReact("test-component", {
+    makeObservable: ["content"],
+    setObservable: { content: "setContent" }
+  });
+
+  const Parent = () => {
+    const [content, setContent] = React.useState("INITIAL");
+    return (
+      <div>
+        {content}
+        <Component content={content} setContent={setContent}></Component>
+      </div>
+    );
+  };
+
+  ReactDOM.render(<Parent />, root);
+
+  setTimeout(() => {
+    expect(root.innerHTML).toContain("INITIAL");
+
+    act(() => {
+      document.getElementById("target").dispatchEvent(
+        new MouseEvent("click", {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        })
+      );
+    });
+
+    expect(root.innerHTML).toContain("SUCCESS");
+    done();
   }, 100);
 });
